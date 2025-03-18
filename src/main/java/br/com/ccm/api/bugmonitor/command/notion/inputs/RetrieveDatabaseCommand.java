@@ -1,6 +1,6 @@
 package br.com.ccm.api.bugmonitor.command.notion.inputs;
 
-public record NotionRequestCommand(
+public record RetrieveDatabaseCommand(
         Filter filter
 ) {
 }

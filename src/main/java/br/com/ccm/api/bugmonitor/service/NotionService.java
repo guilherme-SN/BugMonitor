@@ -1,5 +1,9 @@
 package br.com.ccm.api.bugmonitor.service;
 
+import br.com.ccm.api.bugmonitor.command.notion.inputs.Filter;
+import br.com.ccm.api.bugmonitor.command.notion.inputs.RetrieveDatabaseCommand;
+import br.com.ccm.api.bugmonitor.command.notion.inputs.Select;
+import br.com.ccm.api.bugmonitor.command.notion.outputs.NotionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,10 +18,12 @@ public class NotionService {
 
     private final WebClient webClient;
 
-    public Mono<String> getDatabase() {
+    public Mono<NotionResponse> getDatabase() {
+        RetrieveDatabaseCommand notionRequest = new RetrieveDatabaseCommand(new Filter("Tipo", new Select("Bug")));
         return webClient.post()
                 .uri("/databases/{databaseId}/query", notionDatabaseId)
+                .body(Mono.just(notionRequest), RetrieveDatabaseCommand.class)
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(NotionResponse.class);
     }
 }

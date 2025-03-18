@@ -1,9 +1,10 @@
-package br.com.ccm.api.bugmonitor.command.notion.outputs;
+package br.com.ccm.api.bugmonitor.command.notion.outputs.attribute;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Result(
-        Properties properties
+        Properties properties,
+        String url
 ) {
 }
