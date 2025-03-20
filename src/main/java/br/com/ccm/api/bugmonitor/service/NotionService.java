@@ -1,7 +1,7 @@
 package br.com.ccm.api.bugmonitor.service;
 
 import br.com.ccm.api.bugmonitor.command.notion.inputs.Filter;
-import br.com.ccm.api.bugmonitor.command.notion.inputs.RetrieveDatabaseCommand;
+import br.com.ccm.api.bugmonitor.command.notion.inputs.FilterDatabaseCommand;
 import br.com.ccm.api.bugmonitor.command.notion.inputs.Select;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.NotionResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ public class NotionService {
     private final WebClient webClient;
 
     public Mono<NotionResponse> getDatabase() {
-        RetrieveDatabaseCommand notionRequest = new RetrieveDatabaseCommand(new Filter("Tipo", new Select("Bug")));
+        FilterDatabaseCommand notionRequest = new FilterDatabaseCommand(new Filter("Tipo", new Select("Bug")));
         return webClient.post()
                 .uri("/databases/{databaseId}/query", notionDatabaseId)
-                .body(Mono.just(notionRequest), RetrieveDatabaseCommand.class)
+                .body(Mono.just(notionRequest), FilterDatabaseCommand.class)
                 .retrieve()
                 .bodyToMono(NotionResponse.class);
     }
