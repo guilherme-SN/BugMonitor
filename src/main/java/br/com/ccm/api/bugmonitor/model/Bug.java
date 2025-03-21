@@ -1,9 +1,11 @@
 package br.com.ccm.api.bugmonitor.model;
 
+import br.com.ccm.api.bugmonitor.enums.EImplementationStatus;
 import br.com.ccm.api.bugmonitor.enums.EReporter;
 import br.com.ccm.api.bugmonitor.enums.ETaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +14,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "bugs")
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Bug {
