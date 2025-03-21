@@ -1,6 +1,5 @@
 package br.com.ccm.api.bugmonitor.enums;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +11,7 @@ public enum ETaskStatus {
     PROD_PRIORITIZATION("Priorização Roadmap"),
     BENCHMARKING_IDEATION("Benchmarking e Ideação"),
     PRODUCT("Produto"),
-    QA_PRE_ANALYSIS("QA - Pré análise"),
+    QA_PRE_ANALYSIS("QA - Pré Análise"),
     DEV_READY_FOR_DEVELOPMENT("DEV - Pronto para desenvolvimento"),
     DEV_PRESENTATION("Apresentação Dev"),
     PENDING_DEV_CORRECTION("Correção pendente DEV"),
@@ -40,10 +39,9 @@ public enum ETaskStatus {
 
     private final String originalName;
 
-    @JsonCreator
     public static ETaskStatus fromString(String originalName) {
         return Arrays.stream(values())
-                .filter(taskStatus -> taskStatus.originalName.equals(originalName))
+                .filter(taskStatus -> taskStatus.originalName.equalsIgnoreCase(originalName))
                 .findFirst()
                 .orElse(UNKNOWN);
     }

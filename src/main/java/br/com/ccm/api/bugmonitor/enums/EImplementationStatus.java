@@ -1,6 +1,5 @@
 package br.com.ccm.api.bugmonitor.enums;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -21,10 +20,9 @@ public enum EImplementationStatus {
 
     private final String originalName;
 
-    @JsonCreator
     public static EImplementationStatus fromString(String originalName) {
         return Arrays.stream(values())
-                .filter(implementationStatus -> implementationStatus.originalName.equals(originalName))
+                .filter(implementationStatus -> implementationStatus.originalName.equalsIgnoreCase(originalName))
                 .findFirst()
                 .orElse(UNKNOWN);
     }

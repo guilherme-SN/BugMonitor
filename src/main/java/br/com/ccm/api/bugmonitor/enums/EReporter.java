@@ -1,6 +1,5 @@
 package br.com.ccm.api.bugmonitor.enums;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,10 +14,9 @@ public enum EReporter {
 
     private final String originalName;
 
-    @JsonCreator
     public static EReporter fromString(String originalName) {
         return Arrays.stream(values())
-                .filter(reporter -> reporter.originalName.equals(originalName))
+                .filter(reporter -> reporter.originalName.equalsIgnoreCase(originalName))
                 .findFirst()
                 .orElse(UNKNOWN);
     }
