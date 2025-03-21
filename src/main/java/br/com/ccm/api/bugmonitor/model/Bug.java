@@ -23,6 +23,7 @@ public class Bug {
     @Id
     private Long ccmId;
     private String name;
+    private String url;
 
     @Enumerated(EnumType.STRING)
     private EReporter reportedBy;
