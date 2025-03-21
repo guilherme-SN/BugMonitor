@@ -6,6 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CreatedBy(
         @JsonProperty("created_by")
-        User user
+        Responsible creator
 ) {
 }

@@ -19,18 +19,17 @@ public class SchedulerNotionService {
     private final BugService bugService;
 
     public void retrieveNotionDatabase() {
-        notionService.getDatabase()
-                .subscribe(this::processNotionDatabase);
+        notionService.getDatabase().subscribe(this::processNotionDatabase);
     }
 
     private void processNotionDatabase(NotionResponse notionResponse) {
-        for (NotionPage notionPage : notionResponse.results()) {
+        for (NotionPage notionPage : notionResponse.notionPages()) {
             processNotionPage(notionPage);
         }
     }
 
     private void processNotionPage(NotionPage notionPage) {
-        Optional<Bug> bugOptional = bugRepository.findById(notionPage.properties().id().uniqueId().number());
+        Optional<Bug> bugOptional = bugRepository.findById(notionPage.properties().pageId().uniqueId().number());
 
         if (bugOptional.isEmpty()) {
             bugService.saveFromNotionPage(notionPage);

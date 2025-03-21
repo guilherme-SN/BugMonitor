@@ -1,7 +1,7 @@
 package br.com.ccm.api.bugmonitor.service;
 
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
-import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.People;
+import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Responsible;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Select;
 import br.com.ccm.api.bugmonitor.enums.EImplementationStatus;
 import br.com.ccm.api.bugmonitor.enums.EReporter;
@@ -49,11 +49,11 @@ public class BugService {
     }
 
     private Long extractCcmId(NotionPage notionPage) {
-        return notionPage.properties().id().uniqueId().number();
+        return notionPage.properties().pageId().uniqueId().number();
     }
 
     private String extractName(NotionPage notionPage) {
-        return notionPage.properties().taskName().title().getFirst().text().content();
+        return notionPage.properties().taskName().titles().getFirst().text().content();
     }
 
     private EReporter extractReportedBy(NotionPage notionPage) {
@@ -88,7 +88,7 @@ public class BugService {
 
     private Set<Customer> extractOrCreateImpactedCustomers(NotionPage notionPage) {
         Set<Customer> impactedCustomers = new HashSet<>();
-        List<Select> customersName = notionPage.properties().client().multiSelect();
+        List<Select> customersName = notionPage.properties().customers().impactedCustomers();
 
         for (Select customerName : customersName) {
             Customer customer = customerRepository.findByName(customerName.name())
@@ -106,9 +106,9 @@ public class BugService {
     private Set<User> extractOrCreateBackendResponsibles(NotionPage notionPage) {
         Set<User> backendResponsibleUsers = new HashSet<>();
 
-        List<People> backendResponsiblePeople = notionPage.properties().backendResponsible().people();
+        List<Responsible> backendResponsiblePeople = notionPage.properties().backendResponsible().responsibles();
 
-        for (People responsible : backendResponsiblePeople) {
+        for (Responsible responsible : backendResponsiblePeople) {
             User user = userRepository.findByUuid(responsible.id())
                     .orElseGet(() -> {
                         User newUser = User.builder()
@@ -129,9 +129,9 @@ public class BugService {
     private Set<User> extractOrCreateFrontendResponsibles(NotionPage notionPage) {
         Set<User> frontendResponsibleUsers = new HashSet<>();
 
-        List<People> frontendResponsiblePeople = notionPage.properties().frontendResponsible().people();
+        List<Responsible> frontendResponsiblePeople = notionPage.properties().frontendResponsible().responsibles();
 
-        for (People responsible : frontendResponsiblePeople) {
+        for (Responsible responsible : frontendResponsiblePeople) {
             User user = userRepository.findByUuid(responsible.id())
                     .orElseGet(() -> {
                         User newUser = User.builder()
@@ -150,12 +150,12 @@ public class BugService {
     }
 
     private User extractOrCreateCreatedBy(NotionPage notionPage) {
-        return userRepository.findByEmail(notionPage.properties().createdBy().user().person().email())
+        return userRepository.findByEmail(notionPage.properties().createdBy().creator().person().email())
                 .orElseGet(() -> {
                     User newUser = User.builder()
-                            .uuid(notionPage.properties().createdBy().user().id())
-                            .email(notionPage.properties().createdBy().user().person().email())
-                            .name(notionPage.properties().createdBy().user().name())
+                            .uuid(notionPage.properties().createdBy().creator().id())
+                            .email(notionPage.properties().createdBy().creator().person().email())
+                            .name(notionPage.properties().createdBy().creator().name())
                             .build();
 
                     return userRepository.save(newUser);

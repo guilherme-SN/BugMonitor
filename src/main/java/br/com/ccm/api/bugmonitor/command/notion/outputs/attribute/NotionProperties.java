@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record NotionProperties(
     @JsonProperty("ID")
-    Id id,
+    Id pageId,
 
     @JsonProperty("Cliente")
-    Client client,
+    Customer customers,
 
     @JsonProperty("Reportado por")
     ReportedBy reportedBy,
