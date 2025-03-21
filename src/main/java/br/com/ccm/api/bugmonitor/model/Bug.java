@@ -32,13 +32,13 @@ public class Bug {
     private ETaskStatus taskStatus;
 
     @Enumerated(EnumType.STRING)
-    private ETaskStatus qaStatus;
+    private EImplementationStatus qaStatus;
 
     @Enumerated(EnumType.STRING)
-    private ETaskStatus backendStatus;
+    private EImplementationStatus backendStatus;
 
     @Enumerated(EnumType.STRING)
-    private ETaskStatus frontendStatus;
+    private EImplementationStatus frontendStatus;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -48,7 +48,7 @@ public class Bug {
     )
     private Set<Customer> impactedCustomers = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "bug_backend_responsibles",
             joinColumns = @JoinColumn(name = "bug_id"),
@@ -56,7 +56,7 @@ public class Bug {
     )
     private Set<User> backendResponsibles = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "bug_frontend_responsibles",
             joinColumns = @JoinColumn(name = "bug_id"),
