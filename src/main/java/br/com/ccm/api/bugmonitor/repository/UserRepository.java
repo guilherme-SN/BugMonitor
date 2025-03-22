@@ -14,11 +14,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
             WHERE uuid = :uuid
             """, nativeQuery = true)
     Optional<User> findByUuid(@Param(value = "uuid") String uuid);
-
-    @Query(value = """
-            SELECT *
-            FROM users
-            WHERE email = :email
-            """, nativeQuery = true)
-    Optional<User> findByEmail(@Param(value = "email") String email);
 }
