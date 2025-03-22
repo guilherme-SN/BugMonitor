@@ -16,11 +16,11 @@ public class NotionService {
     @Value("${notion.database.id}")
     private String notionDatabaseId;
 
-    private final WebClient webClient;
+    private final WebClient notionWebClient;
 
     public Mono<NotionResponse> getDatabase() {
         FilterDatabaseCommand notionRequest = new FilterDatabaseCommand(new Filter("Tipo", new Select("Bug")));
-        return webClient.post()
+        return notionWebClient.post()
                 .uri("/databases/{databaseId}/query", notionDatabaseId)
                 .body(Mono.just(notionRequest), FilterDatabaseCommand.class)
                 .retrieve()

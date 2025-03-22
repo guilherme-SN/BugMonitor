@@ -11,7 +11,7 @@ public class WebClientConfig {
     private String notionToken;
 
     @Bean
-    public WebClient webClient() {
+    public WebClient notionWebClient() {
         return WebClient.builder()
                 .baseUrl("https://api.notion.com/v1")
                 .defaultHeader("Notion-Version", "2022-06-28")
