@@ -18,4 +18,11 @@ public class WebClientConfig {
                 .defaultHeader("Authorization", "Bearer " + notionToken)
                 .build();
     }
+
+    @Bean
+    public WebClient discordWebClient() {
+        return WebClient.builder()
+                .baseUrl("https://discord.com/api")
+                .build();
+    }
 }
