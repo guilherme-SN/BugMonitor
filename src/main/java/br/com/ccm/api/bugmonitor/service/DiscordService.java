@@ -39,7 +39,8 @@ public class DiscordService {
                                                         .map(Customer::getName)
                                                         .collect(Collectors.joining(", ")),
                                                 false),
-                                        new Field("Status", bug.getQaStatus().getOriginalName(), false),
+                                        new Field("Prioridade", String.valueOf(bug.getPriority()), true),
+                                        new Field("Status", bug.getQaStatus().getOriginalName(), true),
                                         new Field("Responsáveis - Backend",
                                                 bug.getBackendResponsibles().stream()
                                                         .map(User::getName)

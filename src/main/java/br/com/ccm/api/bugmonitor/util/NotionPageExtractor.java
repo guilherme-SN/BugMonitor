@@ -32,6 +32,7 @@ public class NotionPageExtractor {
         return Bug.builder()
                 .url(notionPage.url())
                 .ccmId(extractCcmId(notionPage))
+                .priority(extractPriority(notionPage))
                 .name(extractName(notionPage))
                 .reportedBy(extractReportedBy(notionPage))
                 .taskStatus(extractTaskStatus(notionPage))
@@ -49,6 +50,22 @@ public class NotionPageExtractor {
 
     private Long extractCcmId(NotionPage notionPage) {
         return notionPage.properties().pageId().uniqueId().number();
+    }
+
+    private Integer extractPriority(NotionPage notionPage) {
+        String stringPriority = notionPage.properties().priority().select().name();
+
+        try {
+            return Integer.parseInt(stringPriority);
+        } catch (NumberFormatException ex) {
+            return switch (stringPriority) {
+                case "Baixa" -> 2;
+                case "Média" -> 5;
+                case "Alta" -> 7;
+                case "Urgente" -> 10;
+                default -> 0;
+            };
+        }
     }
 
     private String extractName(NotionPage notionPage) {
