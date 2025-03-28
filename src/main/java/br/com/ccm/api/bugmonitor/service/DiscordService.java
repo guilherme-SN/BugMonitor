@@ -40,7 +40,7 @@ public class DiscordService {
                                                         .collect(Collectors.joining(", ")),
                                                 false),
                                         new Field("Prioridade", String.valueOf(bug.getPriority()), true),
-                                        new Field("Status", bug.getQaStatus().getOriginalName(), true),
+                                        new Field("Status", bug.getTaskStatus().getOriginalName(), true),
                                         new Field("Responsáveis - Backend",
                                                 bug.getBackendResponsibles().stream()
                                                         .map(User::getName)
