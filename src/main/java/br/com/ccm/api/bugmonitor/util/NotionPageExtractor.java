@@ -7,8 +7,10 @@ import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Select;
 import br.com.ccm.api.bugmonitor.enums.EResponsibleRole;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import br.com.ccm.api.bugmonitor.model.Customer;
+import br.com.ccm.api.bugmonitor.model.Epic;
 import br.com.ccm.api.bugmonitor.model.User;
 import br.com.ccm.api.bugmonitor.repository.CustomerRepository;
+import br.com.ccm.api.bugmonitor.repository.EpicRepository;
 import br.com.ccm.api.bugmonitor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class NotionPageExtractor {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
+    private final EpicRepository epicRepository;
 
     public Bug extractBugFromNotionPage(NotionPage notionPage) {
         return Bug.builder()
@@ -32,6 +35,7 @@ public class NotionPageExtractor {
                 .priority(extractPriority(notionPage))
                 .name(extractName(notionPage))
                 .reportedBy(extractReportedBy(notionPage))
+                .epics(extractOrCreateEpics(notionPage))
                 .taskStatus(extractTaskStatus(notionPage))
                 .qaStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.QA))
                 .backendStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.BACKEND))
@@ -71,6 +75,23 @@ public class NotionPageExtractor {
 
     private String extractReportedBy(NotionPage notionPage) {
         return notionPage.properties().reportedBy().select().name();
+    }
+
+    private Set<Epic> extractOrCreateEpics(NotionPage notionPage) {
+        Set<Epic> epics = new HashSet<>();
+        List<Select> epicsName = notionPage.properties().epics().epics();
+
+        for (Select epicName : epicsName) {
+            Epic epic = epicRepository.findByName(epicName.name())
+                    .orElseGet(() -> {
+                        Epic newEpic = Epic.builder().name(epicName.name()).build();
+                        return epicRepository.save(newEpic);
+                    });
+
+            epics.add(epic);
+        }
+
+        return epics;
     }
 
     private String extractTaskStatus(NotionPage notionPage) {

@@ -17,6 +17,9 @@ public record NotionProperties(
     @JsonProperty("Reportado por")
     ReportedBy reportedBy,
 
+    @JsonProperty("Épico")
+    Epic epics,
+
     @JsonProperty("Nome da tarefa")
     TaskName taskName,
 

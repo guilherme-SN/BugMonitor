@@ -33,6 +33,14 @@ public class Bug {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
+            name = "bug_epics",
+            joinColumns = @JoinColumn(name = "bug_id"),
+            inverseJoinColumns = @JoinColumn(name = "epic_id")
+    )
+    private Set<Epic> epics = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
             name = "bug_customers",
             joinColumns = @JoinColumn(name = "bug_id"),
             inverseJoinColumns = @JoinColumn(name = "customer_id")
