@@ -4,10 +4,7 @@ import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionProperties;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Responsible;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Select;
-import br.com.ccm.api.bugmonitor.enums.EImplementationStatus;
-import br.com.ccm.api.bugmonitor.enums.EReporter;
 import br.com.ccm.api.bugmonitor.enums.EResponsibleRole;
-import br.com.ccm.api.bugmonitor.enums.ETaskStatus;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import br.com.ccm.api.bugmonitor.model.Customer;
 import br.com.ccm.api.bugmonitor.model.User;
@@ -72,19 +69,15 @@ public class NotionPageExtractor {
         return notionPage.properties().taskName().titles().getFirst().text().content();
     }
 
-    private EReporter extractReportedBy(NotionPage notionPage) {
-        String reportedBy = notionPage.properties().reportedBy().select().name();
-
-        return EReporter.fromString(reportedBy);
+    private String extractReportedBy(NotionPage notionPage) {
+        return notionPage.properties().reportedBy().select().name();
     }
 
-    private ETaskStatus extractTaskStatus(NotionPage notionPage) {
-        String taskStatus = notionPage.properties().taskStatus().select().name();
-
-        return ETaskStatus.fromString(taskStatus);
+    private String extractTaskStatus(NotionPage notionPage) {
+        return notionPage.properties().taskStatus().select().name();
     }
 
-    private EImplementationStatus extractImplementationStatusByRole(NotionPage notionPage, EResponsibleRole role) {
+    private String extractImplementationStatusByRole(NotionPage notionPage, EResponsibleRole role) {
         NotionProperties notionProperties = notionPage.properties();
         String status = "";
 
@@ -94,7 +87,7 @@ public class NotionPageExtractor {
             case BACKEND -> status = notionProperties.backendStatus().select().name();
         }
 
-        return EImplementationStatus.fromString(status);
+        return status;
     }
 
     private Set<Customer> extractOrCreateImpactedCustomers(NotionPage notionPage) {

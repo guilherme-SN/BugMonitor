@@ -1,8 +1,5 @@
 package br.com.ccm.api.bugmonitor.model;
 
-import br.com.ccm.api.bugmonitor.enums.EImplementationStatus;
-import br.com.ccm.api.bugmonitor.enums.EReporter;
-import br.com.ccm.api.bugmonitor.enums.ETaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,24 +19,17 @@ import java.util.Set;
 public class Bug {
     @Id
     private Long ccmId;
+
     private Integer priority;
     private String name;
     private String url;
 
-    @Enumerated(EnumType.STRING)
-    private EReporter reportedBy;
+    private String reportedBy;
 
-    @Enumerated(EnumType.STRING)
-    private ETaskStatus taskStatus;
-
-    @Enumerated(EnumType.STRING)
-    private EImplementationStatus qaStatus;
-
-    @Enumerated(EnumType.STRING)
-    private EImplementationStatus backendStatus;
-
-    @Enumerated(EnumType.STRING)
-    private EImplementationStatus frontendStatus;
+    private String taskStatus;
+    private String qaStatus;
+    private String backendStatus;
+    private String frontendStatus;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
