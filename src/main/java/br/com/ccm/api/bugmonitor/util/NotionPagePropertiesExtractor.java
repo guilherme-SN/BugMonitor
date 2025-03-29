@@ -49,11 +49,11 @@ public class NotionPagePropertiesExtractor {
                 .build();
     }
 
-    private Long extractCcmId(NotionPage notionPage) {
+    public Long extractCcmId(NotionPage notionPage) {
         return notionPage.properties().pageId().uniqueId().number();
     }
 
-    private Integer extractPriority(NotionPage notionPage) {
+    public Integer extractPriority(NotionPage notionPage) {
         String stringPriority = notionPage.properties().priority().select().name();
 
         try {
@@ -69,15 +69,15 @@ public class NotionPagePropertiesExtractor {
         }
     }
 
-    private String extractName(NotionPage notionPage) {
+    public String extractName(NotionPage notionPage) {
         return notionPage.properties().taskName().titles().getFirst().text().content();
     }
 
-    private String extractReportedBy(NotionPage notionPage) {
+    public String extractReportedBy(NotionPage notionPage) {
         return notionPage.properties().reportedBy().select().name();
     }
 
-    private Set<Epic> extractOrCreateEpics(NotionPage notionPage) {
+    public Set<Epic> extractOrCreateEpics(NotionPage notionPage) {
         Set<Epic> epics = new HashSet<>();
         List<Select> epicsName = notionPage.properties().epics().epics();
 
@@ -94,11 +94,11 @@ public class NotionPagePropertiesExtractor {
         return epics;
     }
 
-    private String extractTaskStatus(NotionPage notionPage) {
+    public String extractTaskStatus(NotionPage notionPage) {
         return notionPage.properties().taskStatus().select().name();
     }
 
-    private String extractImplementationStatusByRole(NotionPage notionPage, EResponsibleRole role) {
+    public String extractImplementationStatusByRole(NotionPage notionPage, EResponsibleRole role) {
         NotionProperties notionProperties = notionPage.properties();
         String status = "";
 
@@ -111,7 +111,7 @@ public class NotionPagePropertiesExtractor {
         return status;
     }
 
-    private Set<Customer> extractOrCreateImpactedCustomers(NotionPage notionPage) {
+    public Set<Customer> extractOrCreateImpactedCustomers(NotionPage notionPage) {
         Set<Customer> impactedCustomers = new HashSet<>();
         List<Select> customersName = notionPage.properties().customers().impactedCustomers();
 
@@ -128,7 +128,7 @@ public class NotionPagePropertiesExtractor {
         return impactedCustomers;
     }
 
-    private Set<User> extractOrCreateResponsibles(NotionPage notionPage, EResponsibleRole role) {
+    public Set<User> extractOrCreateResponsibles(NotionPage notionPage, EResponsibleRole role) {
         List<Responsible> responsibles = role.equals(EResponsibleRole.BACKEND)
                 ? notionPage.properties().backendResponsible().responsibles()
                 : notionPage.properties().frontendResponsible().responsibles();
@@ -139,7 +139,7 @@ public class NotionPagePropertiesExtractor {
                 .collect(Collectors.toSet());
     }
 
-    private User extractOrCreateCreatedBy(NotionPage notionPage) {
+    public User extractOrCreateCreatedBy(NotionPage notionPage) {
         return findOrCreateUser(
                 notionPage.properties().createdBy().creator().id(),
                 notionPage.properties().createdBy().creator().person().email(),
@@ -147,7 +147,7 @@ public class NotionPagePropertiesExtractor {
         );
     }
 
-    private User findOrCreateUser(String uuid, String email, String name) {
+    public User findOrCreateUser(String uuid, String email, String name) {
         return userRepository.findByUuid(uuid)
                 .orElseGet(() -> {
                     User newUser = User.builder()
@@ -160,11 +160,11 @@ public class NotionPagePropertiesExtractor {
                 });
     }
 
-    private LocalDateTime extractCreatedAt(NotionPage notionPage) {
+    public LocalDateTime extractCreatedAt(NotionPage notionPage) {
         return notionPage.properties().createdTime().createdTime();
     }
 
-    private LocalDateTime extractLastEditedAt(NotionPage notionPage) {
+    public LocalDateTime extractLastEditedAt(NotionPage notionPage) {
         return notionPage.properties().lastEditedAt().lastEditedAt();
     }
 }
