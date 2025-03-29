@@ -14,6 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BugService {
     private final NotionPageExtractor notionPageExtractor;
+    private final NotionPagePropertiesExtractor notionPagePropertiesExtractor;
     private final DiscordNotificationService discordNotificationService;
     private final BugRepository bugRepository;
 
@@ -32,9 +33,9 @@ public class BugService {
     }
 
     public void createBugFromNotionPage(NotionPage notionPage) {
-        Bug bug = notionPageExtractor.extractBugFromNotionPage(notionPage);
+        Bug bug = notionPagePropertiesExtractor.extractBugFromNotionPage(notionPage);
         bugRepository.save(bug);
-        discordNotificationService.notifyNewBug(bug);
+        //discordNotificationService.notifyNewBug(bug);
     }
 
     private void updateBugIfNeeded(NotionPage notionPage, Bug savedBug) {

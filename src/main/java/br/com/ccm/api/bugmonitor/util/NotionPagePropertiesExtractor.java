@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class NotionPageExtractor {
+public class NotionPagePropertiesExtractor {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final EpicRepository epicRepository;
