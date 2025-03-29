@@ -4,7 +4,8 @@ import br.com.ccm.api.bugmonitor.command.notion.outputs.NotionResponse;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import br.com.ccm.api.bugmonitor.repository.BugRepository;
-import br.com.ccm.api.bugmonitor.util.NotionPageExtractor;
+import br.com.ccm.api.bugmonitor.util.NotionPageComparator;
+import br.com.ccm.api.bugmonitor.util.NotionPagePropertiesExtractor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BugService {
-    private final NotionPageExtractor notionPageExtractor;
     private final NotionPagePropertiesExtractor notionPagePropertiesExtractor;
+    private final NotionPageComparator notionPageComparator;
     private final DiscordNotificationService discordNotificationService;
     private final BugRepository bugRepository;
 
@@ -38,6 +39,10 @@ public class BugService {
         //discordNotificationService.notifyNewBug(bug);
     }
 
-    private void updateBugIfNeeded(NotionPage notionPage, Bug savedBug) {
+    private void updateBugIfNeeded(NotionPage notionPageRetrieved, Bug existingBug) {
+        if (notionPageComparator.isNotionPageUpdated(notionPageRetrieved, existingBug)) {
+            Bug updatedBug = notionPagePropertiesExtractor.extractBugFromNotionPage(notionPageRetrieved);
+
+        }
     }
 }
