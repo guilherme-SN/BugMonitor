@@ -47,7 +47,7 @@ public class Bug {
     )
     private Set<Customer> impactedCustomers = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "bug_backend_responsibles",
             joinColumns = @JoinColumn(name = "bug_id"),
@@ -55,7 +55,7 @@ public class Bug {
     )
     private Set<User> backendResponsibles = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "bug_frontend_responsibles",
             joinColumns = @JoinColumn(name = "bug_id"),
