@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DiscordService {
+public class DiscordNotificationService {
     @Value("${discord.webhook.id}")
     private String webhookId;
 
@@ -25,7 +25,7 @@ public class DiscordService {
 
     private final WebClient discordWebClient;
 
-    public void sendNewBugNotification(Bug bug) {
+    public void notifyNewBug(Bug bug) {
         SendMessageCommand discordRequest = new SendMessageCommand(
                 "Notificador de Bug - From Notion",
                 List.of(

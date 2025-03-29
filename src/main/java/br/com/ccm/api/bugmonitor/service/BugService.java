@@ -11,12 +11,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BugService {
     private final NotionPageExtractor notionPageExtractor;
-    private final DiscordService discordService;
+    private final DiscordNotificationService discordNotificationService;
     private final BugRepository bugRepository;
 
     public void saveFromNotionPage(NotionPage notionPage) {
         Bug bug = notionPageExtractor.extractBugFromNotionPage(notionPage);
         discordService.sendNewBugNotification(bug);
         bugRepository.save(bug);
+        discordNotificationService.notifyNewBug(bug);
+    }
+
+    private void updateBugIfNeeded(NotionPage notionPage, Bug savedBug) {
     }
 }
