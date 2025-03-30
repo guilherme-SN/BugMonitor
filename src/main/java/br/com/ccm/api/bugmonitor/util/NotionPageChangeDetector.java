@@ -13,27 +13,27 @@ import java.time.LocalDateTime;
 public class NotionPageChangeDetector {
     private final NotionPagePropertiesExtractor propertiesExtractor;
 
-    public boolean hasNotionPageBeenEdited(NotionPage notionPage, Bug existingBug) {
+    public boolean isBugUpdated(NotionPage notionPage, Bug existingBug) {
         LocalDateTime lastEditedTime = propertiesExtractor.extractLastEditedAt(notionPage);
 
         return lastEditedTime.isAfter(existingBug.getLastEditedAt());
     }
 
-    public boolean hasTaskStatusChanged(NotionPage notionPage, Bug existingBug) {
+    public boolean isTaskStatusUpdated(NotionPage notionPage, Bug existingBug) {
         return hasStatusChanged(propertiesExtractor.extractTaskStatus(notionPage), existingBug.getTaskStatus());
     }
 
-    public boolean hasQaStatusChanged(NotionPage notionPage, Bug existingBug) {
+    public boolean isQaStatusUpdated(NotionPage notionPage, Bug existingBug) {
         return hasStatusChanged(propertiesExtractor.extractImplementationStatusByRole(notionPage, EResponsibleRole.QA),
                                 existingBug.getQaStatus());
     }
 
-    public boolean hasBackendStatusChanged(NotionPage notionPage, Bug existingBug) {
+    public boolean isBackendStatusUpdated(NotionPage notionPage, Bug existingBug) {
         return hasStatusChanged(propertiesExtractor.extractImplementationStatusByRole(notionPage, EResponsibleRole.BACKEND),
                                 existingBug.getBackendStatus());
     }
 
-    public boolean hasFrontendStatusChanged(NotionPage notionPage, Bug existingBug) {
+    public boolean isFrontendStatusUpdated(NotionPage notionPage, Bug existingBug) {
         return hasStatusChanged(propertiesExtractor.extractImplementationStatusByRole(notionPage, EResponsibleRole.FRONTEND),
                                 existingBug.getFrontendStatus());
     }
@@ -42,7 +42,7 @@ public class NotionPageChangeDetector {
         return !newStatus.equalsIgnoreCase(existingStatus);
     }
 
-    public boolean hasBugStatusBecomeCompleted(NotionPage notionPage, Bug existingBug) {
+    public boolean isBugNowCompleted(NotionPage notionPage, Bug existingBug) {
         String newTaskStatus = propertiesExtractor.extractTaskStatus(notionPage);
         String existingTaskStatus = existingBug.getTaskStatus();
 

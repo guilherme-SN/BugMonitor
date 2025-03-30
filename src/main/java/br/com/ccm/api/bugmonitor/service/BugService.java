@@ -27,41 +27,41 @@ public class BugService {
         Optional<Bug> bugOptional = bugRepository.findById(notionPage.properties().pageId().uniqueId().number());
 
         if (bugOptional.isEmpty()) {
-            createBugFromNotionPage(notionPage);
+            saveNewBug(notionPage);
         } else {
-            updateBugIfNeeded(notionPage, bugOptional.get());
+            updateBugIfChanged(notionPage, bugOptional.get());
         }
     }
 
-    private void createBugFromNotionPage(NotionPage notionPage) {
+    private void saveNewBug(NotionPage notionPage) {
         Bug bug = propertiesExtractor.extractBugFromNotionPage(notionPage);
         bugRepository.save(bug);
         //discordNotificationService.notifyNewBug(bug);
     }
 
-    private void updateBugIfNeeded(NotionPage notionPage, Bug existingBug) {
-        if (changeDetector.hasNotionPageBeenEdited(notionPage, existingBug)) {
+    private void updateBugIfChanged(NotionPage notionPage, Bug existingBug) {
+        if (changeDetector.isBugUpdated(notionPage, existingBug)) {
             Bug updatedBug = propertiesExtractor.extractBugFromNotionPage(notionPage);
             updatedBug.setCcmId(existingBug.getCcmId());
             updatedBug.setLastEditedAt(changeDetector.resolveLastEditedTimestamp(notionPage, existingBug));
 
             bugRepository.save(updatedBug);
 
-            if (changeDetector.hasBugStatusBecomeCompleted(notionPage, existingBug)) {
+            if (changeDetector.isBugNowCompleted(notionPage, existingBug)) {
                 // TODO: send discord notification with COMPLETED template in GENERAL
-            } else if (changeDetector.hasTaskStatusChanged(notionPage, existingBug)) {
+            } else if (changeDetector.isTaskStatusUpdated(notionPage, existingBug)) {
                 // TODO: send discord notification with STATUS_CHANGED template in GENERAL
             }
 
-            if (changeDetector.hasQaStatusChanged(notionPage, existingBug)) {
+            if (changeDetector.isQaStatusUpdated(notionPage, existingBug)) {
                 // TODO: send discord notification with STATUS_CHANGED template in QA_CHANNEL
             }
 
-            if (changeDetector.hasBackendStatusChanged(notionPage, existingBug)) {
+            if (changeDetector.isBackendStatusUpdated(notionPage, existingBug)) {
                 // TODO: send discord notification with STATUS_CHANGED template in BACKEND_CHANNEL
             }
 
-            if (changeDetector.hasFrontendStatusChanged(notionPage, existingBug)) {
+            if (changeDetector.isFrontendStatusUpdated(notionPage, existingBug)) {
                 // TODO: send discord notification with STATUS_CHANGED template in FRONTEND_CHANNEL
             }
         }
