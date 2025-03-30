@@ -6,6 +6,7 @@ CREATE TABLE bugs (
 	reported_by VARCHAR(255) NOT NULL,
 	creator_id BIGINT NOT NULL,
 	task_status VARCHAR(255) NOT NULL,
+	product_status VARCHAR(255) NOT NULL,
 	qa_status VARCHAR(255) NOT NULL,
 	backend_status VARCHAR(255) NOT NULL,
 	frontend_status VARCHAR(255) NOT NULL,

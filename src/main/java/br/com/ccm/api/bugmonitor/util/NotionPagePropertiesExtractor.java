@@ -37,6 +37,7 @@ public class NotionPagePropertiesExtractor {
                 .reportedBy(extractReportedBy(notionPage))
                 .epics(extractOrCreateEpics(notionPage))
                 .taskStatus(extractTaskStatus(notionPage))
+                .productStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.PRODUCT))
                 .qaStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.QA))
                 .backendStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.BACKEND))
                 .frontendStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.FRONTEND))
@@ -103,6 +104,7 @@ public class NotionPagePropertiesExtractor {
         String status = "";
 
         switch (role) {
+            case PRODUCT -> status = notionProperties.productStatus().select().name();
             case QA -> status = notionProperties.qaStatus().select().name();
             case FRONTEND -> status = notionProperties.frontendStatus().select().name();
             case BACKEND -> status = notionProperties.backendStatus().select().name();

@@ -25,6 +25,7 @@ public class Bug {
     private String reportedBy;
 
     private String taskStatus;
+    private String productStatus;
     private String qaStatus;
     private String backendStatus;
     private String frontendStatus;

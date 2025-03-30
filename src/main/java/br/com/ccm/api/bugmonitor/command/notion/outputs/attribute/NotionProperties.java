@@ -35,6 +35,9 @@ public record NotionProperties(
     @JsonProperty("Status QA")
     TaskStatus qaStatus,
 
+    @JsonProperty("Status Produto")
+    TaskStatus productStatus,
+
     @JsonProperty("Responsavel Front")
     TaskResponsible frontendResponsible,
 
