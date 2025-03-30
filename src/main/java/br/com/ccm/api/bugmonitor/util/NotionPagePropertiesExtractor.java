@@ -161,10 +161,10 @@ public class NotionPagePropertiesExtractor {
     }
 
     public LocalDateTime extractCreatedAt(NotionPage notionPage) {
-        return notionPage.properties().createdTime().createdTime();
+        return TimezoneConverter.convertToSaoPauloTime(notionPage.properties().createdTime().createdTime());
     }
 
     public LocalDateTime extractLastEditedAt(NotionPage notionPage) {
-        return notionPage.properties().lastEditedAt().lastEditedAt();
+        return TimezoneConverter.convertToSaoPauloTime(notionPage.properties().lastEditedAt().lastEditedAt());
     }
 }
