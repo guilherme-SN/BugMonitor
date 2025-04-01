@@ -16,7 +16,7 @@ public class NotionPageChangeDetector {
     public boolean isBugUpdated(NotionPage notionPage, Bug existingBug) {
         LocalDateTime lastEditedTime = propertiesExtractor.extractLastEditedAt(notionPage);
 
-        return lastEditedTime.isAfter(existingBug.getLastEditedAt());
+        return lastEditedTime.isEqual(existingBug.getLastEditedAt()) || lastEditedTime.isAfter(existingBug.getLastEditedAt());
     }
 
     public boolean isTaskStatusUpdated(NotionPage notionPage, Bug existingBug) {
