@@ -1,8 +1,8 @@
 package br.com.ccm.api.bugmonitor.service;
 
-import br.com.ccm.api.bugmonitor.command.notion.inputs.Filter;
+import br.com.ccm.api.bugmonitor.command.notion.inputs.attribute.Filter;
 import br.com.ccm.api.bugmonitor.command.notion.inputs.FilterDatabaseCommand;
-import br.com.ccm.api.bugmonitor.command.notion.inputs.Select;
+import br.com.ccm.api.bugmonitor.command.notion.inputs.attribute.Select;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.NotionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

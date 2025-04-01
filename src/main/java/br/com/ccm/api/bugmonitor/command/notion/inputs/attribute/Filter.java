@@ -1,4 +1,4 @@
-package br.com.ccm.api.bugmonitor.command.notion.inputs;
+package br.com.ccm.api.bugmonitor.command.notion.inputs.attribute;
 
 public record Filter(
         String property,
