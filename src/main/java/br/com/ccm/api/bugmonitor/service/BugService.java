@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +65,22 @@ public class BugService {
             if (changeDetector.isFrontendStatusUpdated(notionPage, existingBug)) {
                 // TODO: send discord notification with STATUS_CHANGED template in FRONTEND_CHANNEL
             }
+        }
+    }
+
+    public void checkForDeletedPages(NotionResponse notionResponse) {
+        Set<Long> bugsToBeDeleted = bugRepository.findAllIds();
+
+        for (NotionPage notionPage : notionResponse.notionPages()) {
+            bugsToBeDeleted.remove(propertiesExtractor.extractCcmId(notionPage));
+        }
+
+        deleteBugs(bugsToBeDeleted);
+    }
+
+    private void deleteBugs(Set<Long> bugsToBeDeleted) {
+        for (Long bugId : bugsToBeDeleted) {
+            bugRepository.deleteById(bugId);
         }
     }
 }
