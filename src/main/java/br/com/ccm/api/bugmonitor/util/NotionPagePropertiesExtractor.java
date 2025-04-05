@@ -1,9 +1,6 @@
 package br.com.ccm.api.bugmonitor.util;
 
-import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
-import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionProperties;
-import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Responsible;
-import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Select;
+import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.*;
 import br.com.ccm.api.bugmonitor.enums.EResponsibleRole;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import br.com.ccm.api.bugmonitor.model.Customer;
@@ -16,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -51,11 +46,21 @@ public class NotionPagePropertiesExtractor {
     }
 
     public Long extractCcmId(NotionPage notionPage) {
-        return notionPage.properties().pageId().uniqueId().number();
+        return Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::pageId)
+                .map(Id::uniqueId)
+                .map(UniqueId::number)
+                .orElse(null);
     }
 
     public Integer extractPriority(NotionPage notionPage) {
-        String stringPriority = notionPage.properties().priority().select().name();
+        String stringPriority = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::priority)
+                .map(Priority::select)
+                .map(Select::name)
+                .orElse(null);
+
+        if (stringPriority == null) return null;
 
         try {
             return Integer.parseInt(stringPriority);
@@ -71,16 +76,30 @@ public class NotionPagePropertiesExtractor {
     }
 
     public String extractName(NotionPage notionPage) {
-        return notionPage.properties().taskName().titles().getFirst().text().content();
+        return Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::taskName)
+                .map(TaskName::titles)
+                .filter(titles -> !titles.isEmpty())
+                .map(List::getFirst)
+                .map(Title::text)
+                .map(Text::content)
+                .orElse(null);
     }
 
     public String extractReportedBy(NotionPage notionPage) {
-        return notionPage.properties().reportedBy().select().name();
+        return Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::reportedBy)
+                .map(ReportedBy::select)
+                .map(Select::name)
+                .orElse(null);
     }
 
     public Set<Epic> extractOrCreateEpics(NotionPage notionPage) {
         Set<Epic> epics = new HashSet<>();
-        List<Select> epicsName = notionPage.properties().epics().epics();
+        List<Select> epicsName = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::epics)
+                .map(br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Epic::epics)
+                .orElse(new ArrayList<>());
 
         for (Select epicName : epicsName) {
             Epic epic = epicRepository.findByName(epicName.name())
@@ -96,26 +115,37 @@ public class NotionPagePropertiesExtractor {
     }
 
     public String extractTaskStatus(NotionPage notionPage) {
-        return notionPage.properties().taskStatus().select().name();
+        return Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::taskStatus)
+                .map(TaskStatus::select)
+                .map(Select::name)
+                .orElse(null);
     }
 
     public String extractImplementationStatusByRole(NotionPage notionPage, EResponsibleRole role) {
         NotionProperties notionProperties = notionPage.properties();
-        String status = "";
 
-        switch (role) {
-            case PRODUCT -> status = notionProperties.productStatus().select().name();
-            case QA -> status = notionProperties.qaStatus().select().name();
-            case FRONTEND -> status = notionProperties.frontendStatus().select().name();
-            case BACKEND -> status = notionProperties.backendStatus().select().name();
-        }
+        return switch (role) {
+            case PRODUCT -> getStatusName(notionProperties.productStatus());
+            case QA -> getStatusName(notionProperties.qaStatus());
+            case FRONTEND -> getStatusName(notionProperties.frontendStatus());
+            case BACKEND -> getStatusName(notionProperties.backendStatus());
+        };
+    }
 
-        return status;
+    private String getStatusName(TaskStatus taskStatus) {
+        return Optional.ofNullable(taskStatus)
+                .map(TaskStatus::select)
+                .map(Select::name)
+                .orElse(null);
     }
 
     public Set<Customer> extractOrCreateImpactedCustomers(NotionPage notionPage) {
         Set<Customer> impactedCustomers = new HashSet<>();
-        List<Select> customersName = notionPage.properties().customers().impactedCustomers();
+        List<Select> customersName = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::customers)
+                .map(br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.Customer::impactedCustomers)
+                .orElse(new ArrayList<>());
 
         for (Select customerName : customersName) {
             Customer customer = customerRepository.findByName(customerName.name())
@@ -136,20 +166,24 @@ public class NotionPagePropertiesExtractor {
                 : notionPage.properties().frontendResponsible().responsibles();
 
         return responsibles.stream()
-                .map(responsible ->
-                        findOrCreateUser(responsible.id(), responsible.person().email(), responsible.name()))
+                .map(this::findOrCreateUser)
                 .collect(Collectors.toSet());
     }
 
     public User extractOrCreateCreatedBy(NotionPage notionPage) {
-        return findOrCreateUser(
-                notionPage.properties().createdBy().creator().id(),
-                notionPage.properties().createdBy().creator().person().email(),
-                notionPage.properties().createdBy().creator().name()
-        );
+        Responsible responsible = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::createdBy)
+                .map(CreatedBy::creator)
+                .orElse(null);
+
+        return responsible == null ? null : findOrCreateUser(responsible);
     }
 
-    public User findOrCreateUser(String uuid, String email, String name) {
+    public User findOrCreateUser(Responsible responsible) {
+        String uuid = responsible.id();
+        String name = responsible.name();
+        String email = responsible.person().email();
+
         return userRepository.findByUuid(uuid)
                 .orElseGet(() -> {
                     User newUser = User.builder()
@@ -163,10 +197,20 @@ public class NotionPagePropertiesExtractor {
     }
 
     public LocalDateTime extractCreatedAt(NotionPage notionPage) {
-        return TimezoneConverter.convertToSaoPauloTime(notionPage.properties().createdTime().createdTime());
+        LocalDateTime utcCreatedTime = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::createdTime)
+                .map(CreatedTime::createdTime)
+                .orElse(null);
+
+        return utcCreatedTime == null ? null : TimezoneConverter.convertToSaoPauloTime(utcCreatedTime);
     }
 
     public LocalDateTime extractLastEditedAt(NotionPage notionPage) {
-        return TimezoneConverter.convertToSaoPauloTime(notionPage.properties().lastEditedAt().lastEditedAt());
+        LocalDateTime utcLastEditedTime = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::lastEditedAt)
+                .map(LastEditedAt::lastEditedAt)
+                .orElse(null);
+
+        return utcLastEditedTime == null ? null : TimezoneConverter.convertToSaoPauloTime(utcLastEditedTime);
     }
 }

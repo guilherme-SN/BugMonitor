@@ -1,12 +1,12 @@
 package br.com.ccm.api.bugmonitor.util;
 
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
-import br.com.ccm.api.bugmonitor.enums.EResponsibleRole;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -19,48 +19,35 @@ public class NotionPageChangeDetector {
         return lastEditedTime.isEqual(existingBug.getLastEditedAt()) || lastEditedTime.isAfter(existingBug.getLastEditedAt());
     }
 
-    public boolean isTaskStatusUpdated(NotionPage notionPage, Bug existingBug) {
-        return hasStatusChanged(propertiesExtractor.extractTaskStatus(notionPage), existingBug.getTaskStatus());
+    public boolean isTaskStatusUpdated(Bug existingBug, Bug updatedBug) {
+        return Objects.equals(existingBug.getTaskStatus(), updatedBug.getTaskStatus());
     }
 
-    public boolean isQaStatusUpdated(NotionPage notionPage, Bug existingBug) {
-        return hasStatusChanged(propertiesExtractor.extractImplementationStatusByRole(notionPage, EResponsibleRole.QA),
-                                existingBug.getQaStatus());
+    public boolean isQaStatusUpdated(Bug existingBug, Bug updatedBug) {
+        return Objects.equals(existingBug.getQaStatus(), updatedBug.getQaStatus());
     }
 
-    public boolean isBackendStatusUpdated(NotionPage notionPage, Bug existingBug) {
-        return hasStatusChanged(propertiesExtractor.extractImplementationStatusByRole(notionPage, EResponsibleRole.BACKEND),
-                                existingBug.getBackendStatus());
+    public boolean isBackendStatusUpdated(Bug existingBug, Bug updatedBug) {
+        return Objects.equals(existingBug.getBackendStatus(), updatedBug.getBackendStatus());
     }
 
-    public boolean isFrontendStatusUpdated(NotionPage notionPage, Bug existingBug) {
-        return hasStatusChanged(propertiesExtractor.extractImplementationStatusByRole(notionPage, EResponsibleRole.FRONTEND),
-                                existingBug.getFrontendStatus());
+    public boolean isFrontendStatusUpdated(Bug existingBug, Bug updatedBug) {
+        return Objects.equals(existingBug.getFrontendStatus(), updatedBug.getFrontendStatus());
     }
 
-    private boolean hasStatusChanged(String newStatus, String existingStatus) {
-        return !newStatus.equalsIgnoreCase(existingStatus);
+    public boolean isBugNowCompleted(Bug existingBug, Bug updatedBug) {
+        return isStatusCompleted(existingBug.getTaskStatus()) && !isStatusCompleted(updatedBug.getTaskStatus());
     }
 
-    public boolean isBugNowCompleted(NotionPage notionPage, Bug existingBug) {
-        String newTaskStatus = propertiesExtractor.extractTaskStatus(notionPage);
-        String existingTaskStatus = existingBug.getTaskStatus();
-
-        return isStatusCompleted(newTaskStatus) && !isStatusCompleted(existingTaskStatus);
-    }
-
-    public LocalDateTime resolveLastEditedTimestamp(NotionPage notionPage, Bug existingBug) {
-        String newTaskStatus = propertiesExtractor.extractTaskStatus(notionPage);
-        String existingTaskStatus = existingBug.getTaskStatus();
-
-        if (isStatusCompleted(newTaskStatus) && isStatusCompleted(existingTaskStatus)) {
+    public LocalDateTime resolveLastEditedTimestamp(Bug existingBug, Bug updatedBug) {
+        if (isStatusCompleted(existingBug.getTaskStatus()) && isStatusCompleted(updatedBug.getTaskStatus())) {
             return existingBug.getLastEditedAt();
         }
 
-        return propertiesExtractor.extractLastEditedAt(notionPage);
+        return updatedBug.getLastEditedAt();
     }
 
     private boolean isStatusCompleted(String status) {
-        return status.equalsIgnoreCase("Done") || status.equalsIgnoreCase("Finalizada");
+        return Objects.equals(status, "Done") || Objects.equals(status, "Finalizada");
     }
 }
