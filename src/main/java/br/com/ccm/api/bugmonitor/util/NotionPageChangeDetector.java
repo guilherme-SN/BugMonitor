@@ -20,23 +20,23 @@ public class NotionPageChangeDetector {
     }
 
     public boolean isTaskStatusUpdated(Bug existingBug, Bug updatedBug) {
-        return Objects.equals(existingBug.getTaskStatus(), updatedBug.getTaskStatus());
+        return !Objects.equals(existingBug.getTaskStatus(), updatedBug.getTaskStatus());
     }
 
     public boolean isQaStatusUpdated(Bug existingBug, Bug updatedBug) {
-        return Objects.equals(existingBug.getQaStatus(), updatedBug.getQaStatus());
+        return !Objects.equals(existingBug.getQaStatus(), updatedBug.getQaStatus());
     }
 
     public boolean isBackendStatusUpdated(Bug existingBug, Bug updatedBug) {
-        return Objects.equals(existingBug.getBackendStatus(), updatedBug.getBackendStatus());
+        return !Objects.equals(existingBug.getBackendStatus(), updatedBug.getBackendStatus());
     }
 
     public boolean isFrontendStatusUpdated(Bug existingBug, Bug updatedBug) {
-        return Objects.equals(existingBug.getFrontendStatus(), updatedBug.getFrontendStatus());
+        return !Objects.equals(existingBug.getFrontendStatus(), updatedBug.getFrontendStatus());
     }
 
     public boolean isBugNowCompleted(Bug existingBug, Bug updatedBug) {
-        return isStatusCompleted(existingBug.getTaskStatus()) && !isStatusCompleted(updatedBug.getTaskStatus());
+        return isStatusCompleted(updatedBug.getTaskStatus()) && !isStatusCompleted(existingBug.getTaskStatus());
     }
 
     public LocalDateTime resolveLastEditedTimestamp(Bug existingBug, Bug updatedBug) {
