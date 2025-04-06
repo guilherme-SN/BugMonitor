@@ -161,7 +161,7 @@ public class NotionPagePropertiesExtractor {
     }
 
     public Set<User> extractOrCreateResponsibles(NotionPage notionPage, EResponsibleRole role) {
-        List<Responsible> responsibles = role.equals(EResponsibleRole.BACKEND)
+        List<Responsible> responsibles = role == EResponsibleRole.BACKEND
                 ? notionPage.properties().backendResponsible().responsibles()
                 : notionPage.properties().frontendResponsible().responsibles();
 
