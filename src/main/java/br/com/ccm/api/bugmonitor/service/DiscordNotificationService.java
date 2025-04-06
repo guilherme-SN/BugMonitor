@@ -4,7 +4,6 @@ import br.com.ccm.api.bugmonitor.command.discord.inputs.SendMessageCommand;
 import br.com.ccm.api.bugmonitor.command.discord.inputs.attribute.*;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import br.com.ccm.api.bugmonitor.model.Customer;
-import br.com.ccm.api.bugmonitor.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,16 +40,6 @@ public class DiscordNotificationService {
                                                 false),
                                         new Field("Prioridade", String.valueOf(bug.getPriority()), true),
                                         new Field("Status", bug.getTaskStatus(), true),
-                                        new Field("Responsáveis - Backend",
-                                                bug.getBackendResponsibles().stream()
-                                                        .map(User::getName)
-                                                        .collect(Collectors.joining(", ")),
-                                                false),
-                                        new Field("Responsáveis - Frontend",
-                                                bug.getFrontendResponsibles().stream()
-                                                        .map(User::getName)
-                                                        .collect(Collectors.joining(", ")),
-                                                false),
                                         new Field("Criado por", bug.getCreatedBy().getName(), false)
                                 ),
                                 new Footer("Monitoramento Automático")
