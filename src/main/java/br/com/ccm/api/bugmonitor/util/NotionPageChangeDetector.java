@@ -5,7 +5,9 @@ import br.com.ccm.api.bugmonitor.model.Bug;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
 @Component
@@ -15,8 +17,15 @@ public class NotionPageChangeDetector {
 
     public boolean isBugUpdated(NotionPage notionPage, Bug existingBug) {
         LocalDateTime lastEditedTime = propertiesExtractor.extractLastEditedAt(notionPage);
+        String taskStatusFromNotion = propertiesExtractor.extractTaskStatus(notionPage);
 
-        return lastEditedTime.isEqual(existingBug.getLastEditedAt()) || lastEditedTime.isAfter(existingBug.getLastEditedAt());
+        LocalDateTime oneMinuteAgo = LocalDateTime.ofInstant(Instant.now(), ZoneId.of("America/Sao_Paulo")).minusSeconds(60);
+
+        boolean editedOneMinuteAgo = lastEditedTime.isAfter(oneMinuteAgo);
+        boolean editedAfterExisting = lastEditedTime.isAfter(existingBug.getLastEditedAt());
+        boolean isNotCompleted = !isStatusCompleted(taskStatusFromNotion);
+
+        return (editedOneMinuteAgo || editedAfterExisting) && isNotCompleted;
     }
 
     public boolean isTaskStatusUpdated(Bug existingBug, Bug updatedBug) {
