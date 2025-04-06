@@ -12,6 +12,7 @@ CREATE TABLE bugs (
 	frontend_status VARCHAR(255),
 	created_at DATETIME,
 	last_edited_at DATETIME,
+	notification_status ENUM('NOT_READY', 'READY', 'SENT') NOT NULL,
 
 	CONSTRAINT fk_creator_id FOREIGN KEY (creator_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,5 +1,6 @@
 package br.com.ccm.api.bugmonitor.model;
 
+import br.com.ccm.api.bugmonitor.enums.EBugNotificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -68,4 +69,7 @@ public class Bug {
 
     private LocalDateTime createdAt;
     private LocalDateTime lastEditedAt;
+
+    @Enumerated(EnumType.STRING)
+    private EBugNotificationStatus notificationStatus;
 }

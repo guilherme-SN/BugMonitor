@@ -2,6 +2,7 @@ package br.com.ccm.api.bugmonitor.service;
 
 import br.com.ccm.api.bugmonitor.command.notion.outputs.NotionResponse;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
+import br.com.ccm.api.bugmonitor.enums.EBugNotificationStatus;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import br.com.ccm.api.bugmonitor.repository.BugRepository;
 import br.com.ccm.api.bugmonitor.util.NotionPageChangeDetector;
@@ -36,8 +37,8 @@ public class BugService {
 
     private void saveNewBug(NotionPage notionPage) {
         Bug bug = propertiesExtractor.extractBugFromNotionPage(notionPage);
+        bug.setNotificationStatus(EBugNotificationStatus.NOT_READY);
         bugRepository.save(bug);
-        //discordNotificationService.notifyNewBug(bug);
     }
 
     private void updateBugIfChanged(NotionPage notionPage, Bug existingBug) {
@@ -45,6 +46,7 @@ public class BugService {
             Bug updatedBug = propertiesExtractor.extractBugFromNotionPage(notionPage);
             updatedBug.setCcmId(existingBug.getCcmId());
             updatedBug.setLastEditedAt(changeDetector.resolveLastEditedTimestamp(existingBug, updatedBug));
+            updatedBug.setNotificationStatus(getNewNotificationStatus(existingBug.getNotificationStatus(), updatedBug));
 
             bugRepository.save(updatedBug);
 
@@ -66,6 +68,31 @@ public class BugService {
                 // TODO: send discord notification with STATUS_CHANGED template in FRONTEND_CHANNEL
             }
         }
+    }
+
+    private EBugNotificationStatus getNewNotificationStatus(EBugNotificationStatus oldStatus, Bug bug) {
+        if (oldStatus == EBugNotificationStatus.SENT) return EBugNotificationStatus.SENT;
+
+        if (isReadyToNotify(bug)) return EBugNotificationStatus.READY;
+
+        return EBugNotificationStatus.NOT_READY;
+    }
+
+    private boolean isReadyToNotify(Bug bug) {
+        return bug.getName() != null
+                && !bug.getImpactedCustomers().isEmpty()
+                && bug.getPriority() != null
+                && bug.getTaskStatus() != null
+                && bug.getCreatedBy() != null;
+    }
+
+    public Set<Bug> getBugsReadyToBeNotified() {
+        return bugRepository.findAllBugsReadyToBeNotified();
+    }
+
+    public void updateNotificationStatus(Bug bug, EBugNotificationStatus notificationStatus) {
+        bug.setNotificationStatus(notificationStatus);
+        bugRepository.save(bug);
     }
 
     public void checkForDeletedPages(NotionResponse notionResponse) {

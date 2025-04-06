@@ -12,4 +12,11 @@ public interface BugRepository extends JpaRepository<Bug, Long> {
             FROM bugs
             """, nativeQuery = true)
     Set<Long> findAllIds();
+
+    @Query(value = """
+            SELECT *
+            FROM bugs
+            WHERE notification_status = 'READY'
+            """, nativeQuery = true)
+    Set<Bug> findAllBugsReadyToBeNotified();
 }
