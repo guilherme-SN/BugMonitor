@@ -8,7 +8,7 @@ public record NotionProperties(
     @JsonProperty("ID")
     Id pageId,
 
-    @JsonProperty("Prior..")
+    @JsonProperty("Prioridade")
     Priority priority,
 
     @JsonProperty("Cliente")
