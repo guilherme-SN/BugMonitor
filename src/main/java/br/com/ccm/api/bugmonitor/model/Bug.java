@@ -63,6 +63,14 @@ public class Bug {
     )
     private Set<User> frontendResponsibles = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "bug_backend_services",
+            joinColumns = @JoinColumn(name = "bug_id"),
+            inverseJoinColumns = @JoinColumn(name = "backend_service_id")
+    )
+    private Set<BackendService> backendServices = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private User createdBy;

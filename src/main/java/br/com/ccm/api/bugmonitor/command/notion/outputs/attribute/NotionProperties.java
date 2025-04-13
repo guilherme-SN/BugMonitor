@@ -44,6 +44,9 @@ public record NotionProperties(
     @JsonProperty("Responsável Back")
     TaskResponsible backendResponsible,
 
+    @JsonProperty("Service BackEnd")
+    BackendService backendService,
+
     @JsonProperty("Created by")
     CreatedBy createdBy,
 

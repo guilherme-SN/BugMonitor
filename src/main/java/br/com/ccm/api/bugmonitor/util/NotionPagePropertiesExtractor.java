@@ -2,10 +2,11 @@ package br.com.ccm.api.bugmonitor.util;
 
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.*;
 import br.com.ccm.api.bugmonitor.enums.EResponsibleRole;
-import br.com.ccm.api.bugmonitor.model.Bug;
+import br.com.ccm.api.bugmonitor.model.*;
+import br.com.ccm.api.bugmonitor.model.BackendService;
 import br.com.ccm.api.bugmonitor.model.Customer;
 import br.com.ccm.api.bugmonitor.model.Epic;
-import br.com.ccm.api.bugmonitor.model.User;
+import br.com.ccm.api.bugmonitor.repository.BackendServiceRepository;
 import br.com.ccm.api.bugmonitor.repository.CustomerRepository;
 import br.com.ccm.api.bugmonitor.repository.EpicRepository;
 import br.com.ccm.api.bugmonitor.repository.UserRepository;
@@ -22,6 +23,7 @@ public class NotionPagePropertiesExtractor {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final EpicRepository epicRepository;
+    private final BackendServiceRepository backendServiceRepository;
 
     public Bug extractBugFromNotionPage(NotionPage notionPage) {
         return Bug.builder()
@@ -39,6 +41,7 @@ public class NotionPagePropertiesExtractor {
                 .impactedCustomers(extractOrCreateImpactedCustomers(notionPage))
                 .backendResponsibles(extractOrCreateResponsibles(notionPage, EResponsibleRole.BACKEND))
                 .frontendResponsibles(extractOrCreateResponsibles(notionPage, EResponsibleRole.FRONTEND))
+                .backendServices(extractOrCreateBackendServices(notionPage))
                 .createdBy(extractOrCreateCreatedBy(notionPage))
                 .createdAt(extractCreatedAt(notionPage))
                 .lastEditedAt(extractLastEditedAt(notionPage))
@@ -168,6 +171,43 @@ public class NotionPagePropertiesExtractor {
         return responsibles.stream()
                 .map(this::findOrCreateUser)
                 .collect(Collectors.toSet());
+    }
+
+    public Set<BackendService> extractOrCreateBackendServices(NotionPage notionPage) {
+        List<RichText> richTextList = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::backendService)
+                .map(br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.BackendService::richText)
+                .orElse(new ArrayList<>());
+
+        if (richTextList.isEmpty()) return new HashSet<>();
+
+        String combinedText = richTextList.stream()
+                .map(RichText::plainText)
+                .flatMap(service -> Arrays.stream(service.split("\\n")))
+                .filter(service -> !service.isBlank())
+                .collect(Collectors.joining(","));
+
+        return findOrCreateBackendServices(combinedText);
+    }
+
+    private Set<BackendService> findOrCreateBackendServices(String rawServiceList) {
+        Set<BackendService> backendServices = new HashSet<>();
+
+        String[] services = Arrays.stream(rawServiceList.split("\\s*(,|\\be\\b)\\s*"))
+                .filter(service -> !service.isBlank())
+                .toArray(String[]::new);
+
+        for (String service : services) {
+            BackendService backendService = backendServiceRepository.findByNameIgnoreCase(service)
+                    .orElseGet(() -> {
+                        BackendService newBackendService = BackendService.builder().name(service).build();
+                        return backendServiceRepository.save(newBackendService);
+                    });
+
+            backendServices.add(backendService);
+        }
+
+        return backendServices;
     }
 
     public User extractOrCreateCreatedBy(NotionPage notionPage) {
