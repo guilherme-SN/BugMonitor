@@ -69,6 +69,7 @@ public class Bug {
 
     private LocalDateTime createdAt;
     private LocalDateTime lastEditedAt;
+    private LocalDateTime completedAt;
 
     @Enumerated(EnumType.STRING)
     private EBugNotificationStatus notificationStatus;

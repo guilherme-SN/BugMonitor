@@ -17,15 +17,12 @@ public class NotionPageChangeDetector {
 
     public boolean isBugUpdated(NotionPage notionPage, Bug existingBug) {
         LocalDateTime lastEditedTime = propertiesExtractor.extractLastEditedAt(notionPage);
-        String taskStatusFromNotion = propertiesExtractor.extractTaskStatus(notionPage);
-
         LocalDateTime oneMinuteAgo = LocalDateTime.ofInstant(Instant.now(), ZoneId.of("America/Sao_Paulo")).minusSeconds(60);
 
         boolean editedOneMinuteAgo = lastEditedTime.isAfter(oneMinuteAgo);
         boolean editedAfterExisting = lastEditedTime.isAfter(existingBug.getLastEditedAt());
-        boolean isNotCompleted = !isStatusCompleted(taskStatusFromNotion);
 
-        return (editedOneMinuteAgo || editedAfterExisting) && isNotCompleted;
+        return editedOneMinuteAgo || editedAfterExisting;
     }
 
     public boolean isTaskStatusUpdated(Bug existingBug, Bug updatedBug) {
@@ -48,15 +45,7 @@ public class NotionPageChangeDetector {
         return isStatusCompleted(updatedBug.getTaskStatus()) && !isStatusCompleted(existingBug.getTaskStatus());
     }
 
-    public LocalDateTime resolveLastEditedTimestamp(Bug existingBug, Bug updatedBug) {
-        if (isStatusCompleted(existingBug.getTaskStatus()) && isStatusCompleted(updatedBug.getTaskStatus())) {
-            return existingBug.getLastEditedAt();
-        }
-
-        return updatedBug.getLastEditedAt();
-    }
-
-    private boolean isStatusCompleted(String status) {
+    public boolean isStatusCompleted(String status) {
         return Objects.equals(status, "Done") || Objects.equals(status, "Finalizada");
     }
 }

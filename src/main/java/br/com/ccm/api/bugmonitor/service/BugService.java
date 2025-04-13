@@ -10,6 +10,7 @@ import br.com.ccm.api.bugmonitor.util.NotionPagePropertiesExtractor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,6 +38,7 @@ public class BugService {
 
     private void saveNewBug(NotionPage notionPage) {
         Bug bug = propertiesExtractor.extractBugFromNotionPage(notionPage);
+        bug.setCompletedAt(changeDetector.isStatusCompleted(bug.getTaskStatus()) ? bug.getLastEditedAt() : null);
         bug.setNotificationStatus(EBugNotificationStatus.NOT_READY);
         bugRepository.save(bug);
     }
@@ -45,7 +47,7 @@ public class BugService {
         if (changeDetector.isBugUpdated(notionPage, existingBug)) {
             Bug updatedBug = propertiesExtractor.extractBugFromNotionPage(notionPage);
             updatedBug.setCcmId(existingBug.getCcmId());
-            updatedBug.setLastEditedAt(changeDetector.resolveLastEditedTimestamp(existingBug, updatedBug));
+            updatedBug.setCompletedAt(getCompletedAt(existingBug, updatedBug));
             updatedBug.setNotificationStatus(getNewNotificationStatus(existingBug.getNotificationStatus(), updatedBug));
 
             bugRepository.save(updatedBug);
@@ -68,6 +70,14 @@ public class BugService {
                 // TODO: send discord notification with STATUS_CHANGED template in FRONTEND_CHANNEL
             }
         }
+    }
+
+    private LocalDateTime getCompletedAt(Bug existingBug, Bug updatedBug) {
+        if (changeDetector.isBugNowCompleted(existingBug, updatedBug)) return updatedBug.getLastEditedAt();
+
+        if (existingBug.getCompletedAt() != null) return existingBug.getCompletedAt();
+
+        return null;
     }
 
     private EBugNotificationStatus getNewNotificationStatus(EBugNotificationStatus oldStatus, Bug bug) {
