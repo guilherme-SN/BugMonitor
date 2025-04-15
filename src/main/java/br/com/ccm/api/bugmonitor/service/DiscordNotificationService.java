@@ -38,7 +38,7 @@ public class DiscordNotificationService {
                                                         .map(Customer::getName)
                                                         .collect(Collectors.joining(", ")),
                                                 false),
-                                        new Field("Prioridade", String.valueOf(bug.getPriority()), true),
+                                        new Field("Prioridade", bug.getPriority(), true),
                                         new Field("Status", bug.getTaskStatus(), true),
                                         new Field("Criado por", bug.getCreatedBy().getName(), false)
                                 ),

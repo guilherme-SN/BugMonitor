@@ -1,6 +1,6 @@
 CREATE TABLE bugs (
 	ccm_id BIGINT PRIMARY KEY,
-	priority INTEGER,
+	priority VARCHAR(255),
 	name VARCHAR(255),
 	url VARCHAR(255),
 	reported_by VARCHAR(255),

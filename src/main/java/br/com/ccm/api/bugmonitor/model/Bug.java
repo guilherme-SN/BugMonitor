@@ -19,7 +19,7 @@ public class Bug {
     @Id
     private Long ccmId;
 
-    private Integer priority;
+    private String priority;
     private String name;
     private String url;
 
