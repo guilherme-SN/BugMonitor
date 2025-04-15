@@ -56,7 +56,7 @@ public class NotionPagePropertiesExtractor {
                 .orElse(null);
     }
 
-    public Integer extractPriority(NotionPage notionPage) {
+    public String extractPriority(NotionPage notionPage) {
         String stringPriority = Optional.ofNullable(notionPage.properties())
                 .map(NotionProperties::priority)
                 .map(Priority::select)
@@ -66,15 +66,15 @@ public class NotionPagePropertiesExtractor {
         if (stringPriority == null) return null;
 
         try {
-            return Integer.parseInt(stringPriority);
+            int intPriority = Integer.parseInt(stringPriority);
+
+            if (intPriority <= 2) return "Muito Baixa";
+            if (intPriority <= 4) return "Baixa";
+            if (intPriority <= 6) return "Média";
+            if (intPriority <= 8) return "Alta";
+            return "Muito Alta";
         } catch (NumberFormatException ex) {
-            return switch (stringPriority) {
-                case "Baixa" -> 2;
-                case "Média" -> 5;
-                case "Alta" -> 7;
-                case "Urgente" -> 10;
-                default -> 0;
-            };
+            return stringPriority.equalsIgnoreCase("Urgente") ? "Muito Alta" : stringPriority;
         }
     }
 
