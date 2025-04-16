@@ -174,6 +174,32 @@ public class NotionPagePropertiesExtractor {
                 .collect(Collectors.toSet());
     }
 
+    public User extractOrCreateCreatedBy(NotionPage notionPage) {
+        Responsible responsible = Optional.ofNullable(notionPage.properties())
+                .map(NotionProperties::createdBy)
+                .map(CreatedBy::creator)
+                .orElse(null);
+
+        return responsible == null ? null : findOrCreateUser(responsible);
+    }
+
+    public User findOrCreateUser(Responsible responsible) {
+        String uuid = responsible.id();
+        String name = responsible.name();
+        String email = responsible.person().email();
+
+        return userRepository.findByUuid(uuid)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .uuid(uuid)
+                            .email(email)
+                            .name(name)
+                            .build();
+
+                    return userRepository.save(newUser);
+                });
+    }
+
     public Set<BackendService> extractOrCreateBackendServices(NotionPage notionPage) {
         List<RichText> richTextList = Optional.ofNullable(notionPage.properties())
                 .map(NotionProperties::backendService)
@@ -209,32 +235,6 @@ public class NotionPagePropertiesExtractor {
         }
 
         return backendServices;
-    }
-
-    public User extractOrCreateCreatedBy(NotionPage notionPage) {
-        Responsible responsible = Optional.ofNullable(notionPage.properties())
-                .map(NotionProperties::createdBy)
-                .map(CreatedBy::creator)
-                .orElse(null);
-
-        return responsible == null ? null : findOrCreateUser(responsible);
-    }
-
-    public User findOrCreateUser(Responsible responsible) {
-        String uuid = responsible.id();
-        String name = responsible.name();
-        String email = responsible.person().email();
-
-        return userRepository.findByUuid(uuid)
-                .orElseGet(() -> {
-                    User newUser = User.builder()
-                            .uuid(uuid)
-                            .email(email)
-                            .name(name)
-                            .build();
-
-                    return userRepository.save(newUser);
-                });
     }
 
     public LocalDateTime extractCreatedAt(NotionPage notionPage) {
