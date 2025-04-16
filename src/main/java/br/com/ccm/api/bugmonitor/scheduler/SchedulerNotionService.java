@@ -1,6 +1,5 @@
 package br.com.ccm.api.bugmonitor.scheduler;
 
-import br.com.ccm.api.bugmonitor.command.notion.outputs.NotionResponse;
 import br.com.ccm.api.bugmonitor.service.BugService;
 import br.com.ccm.api.bugmonitor.service.NotionService;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +12,10 @@ public class SchedulerNotionService {
     private final NotionService notionService;
     private final BugService bugService;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 60000)
     public void retrieveNotionDatabase() {
-        NotionResponse response = notionService.getDatabase().block();
-
-        if (response != null) bugService.processNotionDatabase(response);
+        notionService.getAllPages()
+                .doOnNext(bugService::processNotionDatabase)
+                .subscribe();
     }
 }

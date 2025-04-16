@@ -9,6 +9,12 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record NotionResponse(
         @JsonProperty("results")
-        List<NotionPage> notionPages
+        List<NotionPage> notionPages,
+
+        @JsonProperty("next_cursor")
+        String nextCursor,
+
+        @JsonProperty("has_more")
+        Boolean hasMore
 ) {
 }
