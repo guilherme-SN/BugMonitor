@@ -104,20 +104,4 @@ public class BugService {
         bug.setNotificationStatus(notificationStatus);
         bugRepository.save(bug);
     }
-
-    public void checkForDeletedPages(NotionResponse notionResponse) {
-        Set<Long> bugsToBeDeleted = bugRepository.findAllIds();
-
-        for (NotionPage notionPage : notionResponse.notionPages()) {
-            bugsToBeDeleted.remove(propertiesExtractor.extractCcmId(notionPage));
-        }
-
-        deleteBugs(bugsToBeDeleted);
-    }
-
-    private void deleteBugs(Set<Long> bugsToBeDeleted) {
-        for (Long bugId : bugsToBeDeleted) {
-            bugRepository.deleteById(bugId);
-        }
-    }
 }

@@ -19,9 +19,4 @@ public class SchedulerNotionService {
 
         if (response != null) bugService.processNotionDatabase(response);
     }
-
-    @Scheduled(cron = "0 0 */6 * * 1-5")
-    public void checkForDeletedPages() {
-        notionService.getDatabase().subscribe(bugService::checkForDeletedPages);
-    }
 }
