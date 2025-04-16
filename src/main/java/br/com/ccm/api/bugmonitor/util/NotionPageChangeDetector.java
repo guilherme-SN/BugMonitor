@@ -1,6 +1,7 @@
 package br.com.ccm.api.bugmonitor.util;
 
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
+import br.com.ccm.api.bugmonitor.mapper.NotionPagePropertiesExtractor;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -42,10 +43,6 @@ public class NotionPageChangeDetector {
     }
 
     public boolean isBugNowCompleted(Bug existingBug, Bug updatedBug) {
-        return isStatusCompleted(updatedBug.getTaskStatus()) && !isStatusCompleted(existingBug.getTaskStatus());
-    }
-
-    public boolean isStatusCompleted(String status) {
-        return Objects.equals(status, "Done") || Objects.equals(status, "Finalizada");
+        return BugStatus.isCompleted(updatedBug.getTaskStatus()) && !BugStatus.isCompleted(existingBug.getTaskStatus());
     }
 }
