@@ -1,4 +1,4 @@
-package br.com.ccm.api.bugmonitor.util;
+package br.com.ccm.api.bugmonitor.mapper;
 
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.*;
 import br.com.ccm.api.bugmonitor.enums.EResponsibleRole;
@@ -10,6 +10,7 @@ import br.com.ccm.api.bugmonitor.repository.BackendServiceRepository;
 import br.com.ccm.api.bugmonitor.repository.CustomerRepository;
 import br.com.ccm.api.bugmonitor.repository.EpicRepository;
 import br.com.ccm.api.bugmonitor.repository.UserRepository;
+import br.com.ccm.api.bugmonitor.util.TimezoneConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
