@@ -84,7 +84,7 @@ public class NotionPagePropertiesExtractor {
                 .map(NotionProperties::taskName)
                 .map(TaskName::titles)
                 .filter(titles -> !titles.isEmpty())
-                .map(List::getFirst)
+                .map(titles -> titles.get(0))
                 .map(Title::text)
                 .map(Text::content)
                 .orElse(null);
