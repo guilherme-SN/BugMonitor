@@ -30,6 +30,10 @@ public class NotionPageChangeDetector {
         return !Objects.equals(existingBug.getTaskStatus(), updatedBug.getTaskStatus());
     }
 
+    public boolean isProductStatusUpdated(Bug existingBug, Bug updatedBug) {
+        return !Objects.equals(existingBug.getProductStatus(), updatedBug.getProductStatus());
+    }
+
     public boolean isQaStatusUpdated(Bug existingBug, Bug updatedBug) {
         return !Objects.equals(existingBug.getQaStatus(), updatedBug.getQaStatus());
     }
