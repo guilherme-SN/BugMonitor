@@ -6,7 +6,6 @@ import br.com.ccm.api.bugmonitor.command.discord.inputs.attribute.MessageCompone
 import java.util.List;
 
 public record SendMessageCommand(
-        String username,
         List<Embed> embeds,
         List<MessageComponent> components
 ) {
