@@ -1,7 +1,7 @@
 package br.com.ccm.api.bugmonitor.mapper;
 
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.*;
-import br.com.ccm.api.bugmonitor.enums.EResponsibleRole;
+import br.com.ccm.api.bugmonitor.enums.ERole;
 import br.com.ccm.api.bugmonitor.model.*;
 import br.com.ccm.api.bugmonitor.model.BackendService;
 import br.com.ccm.api.bugmonitor.model.Customer;
@@ -35,13 +35,13 @@ public class NotionPagePropertiesExtractor {
                 .reportedBy(extractReportedBy(notionPage))
                 .epics(extractOrCreateEpics(notionPage))
                 .taskStatus(extractTaskStatus(notionPage))
-                .productStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.PRODUCT))
-                .qaStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.QA))
-                .backendStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.BACKEND))
-                .frontendStatus(extractImplementationStatusByRole(notionPage, EResponsibleRole.FRONTEND))
+                .productStatus(extractImplementationStatusByRole(notionPage, ERole.PRODUCT))
+                .qaStatus(extractImplementationStatusByRole(notionPage, ERole.QA))
+                .backendStatus(extractImplementationStatusByRole(notionPage, ERole.BACKEND))
+                .frontendStatus(extractImplementationStatusByRole(notionPage, ERole.FRONTEND))
                 .impactedCustomers(extractOrCreateImpactedCustomers(notionPage))
-                .backendResponsibles(extractOrCreateResponsibles(notionPage, EResponsibleRole.BACKEND))
-                .frontendResponsibles(extractOrCreateResponsibles(notionPage, EResponsibleRole.FRONTEND))
+                .backendResponsibles(extractOrCreateResponsibles(notionPage, ERole.BACKEND))
+                .frontendResponsibles(extractOrCreateResponsibles(notionPage, ERole.FRONTEND))
                 .backendServices(extractOrCreateBackendServices(notionPage))
                 .createdBy(extractOrCreateCreatedBy(notionPage))
                 .createdAt(extractCreatedAt(notionPage))
@@ -126,7 +126,7 @@ public class NotionPagePropertiesExtractor {
                 .orElse(null);
     }
 
-    public String extractImplementationStatusByRole(NotionPage notionPage, EResponsibleRole role) {
+    public String extractImplementationStatusByRole(NotionPage notionPage, ERole role) {
         NotionProperties notionProperties = notionPage.properties();
 
         return switch (role) {
@@ -164,8 +164,8 @@ public class NotionPagePropertiesExtractor {
         return impactedCustomers;
     }
 
-    public Set<User> extractOrCreateResponsibles(NotionPage notionPage, EResponsibleRole role) {
-        List<Responsible> responsibles = role == EResponsibleRole.BACKEND
+    public Set<User> extractOrCreateResponsibles(NotionPage notionPage, ERole role) {
+        List<Responsible> responsibles = role == ERole.BACKEND
                 ? notionPage.properties().backendResponsible().responsibles()
                 : notionPage.properties().frontendResponsible().responsibles();
 
