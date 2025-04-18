@@ -20,7 +20,7 @@ public class SchedulerDiscordNotificationService {
         Set<Bug> bugsToBeNotified = bugService.getBugsReadyToBeNotified();
 
         for (Bug bug : bugsToBeNotified) {
-            discordNotificationService.notifyNewBug(bug);
+            discordNotificationService.sendBugCreatedNotification(bug);
             bugService.updateNotificationStatus(bug, EBugNotificationStatus.SENT);
         }
     }
