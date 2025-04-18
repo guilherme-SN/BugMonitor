@@ -41,7 +41,7 @@ public class DiscordNotificationService {
 
     public void sendNotification(SendMessageCommand discordRequest, String channelId) {
         discordWebClient.post()
-                .uri("/webhooks/" + webhookId + "/" + webhookToken)
+                .uri("/channels/" + channelId + "/messages")
                 .body(Mono.just(discordRequest), SendMessageCommand.class)
                 .retrieve()
                 .bodyToMono(Void.class)
