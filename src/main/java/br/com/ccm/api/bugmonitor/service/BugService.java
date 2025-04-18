@@ -3,6 +3,7 @@ package br.com.ccm.api.bugmonitor.service;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.NotionResponse;
 import br.com.ccm.api.bugmonitor.command.notion.outputs.attribute.NotionPage;
 import br.com.ccm.api.bugmonitor.enums.EBugNotificationStatus;
+import br.com.ccm.api.bugmonitor.event.BugEventPublisher;
 import br.com.ccm.api.bugmonitor.mapper.NotionBugMapper;
 import br.com.ccm.api.bugmonitor.mapper.NotionPagePropertiesExtractor;
 import br.com.ccm.api.bugmonitor.model.Bug;
@@ -21,6 +22,7 @@ public class BugService {
     private final NotionBugMapper bugMapper;
     private final NotionPagePropertiesExtractor propertiesExtractor;
     private final NotionPageChangeDetector changeDetector;
+    private final BugEventPublisher eventPublisher;
     private final BugRepository bugRepository;
 
     public void processNotionDatabase(NotionResponse notionResponse) {
@@ -52,6 +54,8 @@ public class BugService {
             updatedBug.setNotificationStatus(determineNotificationStatus(existingBug.getNotificationStatus(), updatedBug));
 
             bugRepository.save(updatedBug);
+
+            publishEventsForChanges(existingBug, updatedBug);
         }
     }
 
@@ -69,6 +73,19 @@ public class BugService {
         if (bugMapper.isReadyToNotify(bug)) return EBugNotificationStatus.READY;
 
         return EBugNotificationStatus.NOT_READY;
+    }
+
+    private void publishEventsForChanges(Bug oldBug, Bug newBug) {
+        if (changeDetector.isBugNowCompleted(oldBug, newBug)) {
+            eventPublisher.publishBugCompleted(newBug);
+        } else if (changeDetector.isTaskStatusUpdated(oldBug, newBug)) {
+            eventPublisher.publishTaskStatusChanged(oldBug, newBug);
+        }
+
+        if (changeDetector.isProductStatusUpdated(oldBug, newBug)) eventPublisher.publishProductStatusChanged(oldBug, newBug);
+        if (changeDetector.isQaStatusUpdated(oldBug, newBug)) eventPublisher.publishQaStatusChanged(oldBug, newBug);
+        if (changeDetector.isBackendStatusUpdated(oldBug, newBug)) eventPublisher.publishBackendStatusChanged(oldBug, newBug);
+        if (changeDetector.isFrontendStatusUpdated(oldBug, newBug)) eventPublisher.publishFrontendStatusChanged(oldBug, newBug);
     }
 
     public Set<Bug> getBugsReadyToBeNotified() {
