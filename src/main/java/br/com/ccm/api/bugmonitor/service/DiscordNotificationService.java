@@ -16,11 +16,20 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DiscordNotificationService {
-    @Value("${discord.webhook.id}")
-    private String webhookId;
+    @Value("${discord.channel.general.id}")
+    private String generalChannelId;
 
-    @Value("${discord.webhook.token}")
-    private String webhookToken;
+    @Value("${discord.channel.product.id}")
+    private String productChannelId;
+
+    @Value("${discord.channel.qa.id}")
+    private String qaChannelId;
+
+    @Value("${discord.channel.backend.id}")
+    private String backendChannelId;
+
+    @Value("${discord.channel.frontend.id}")
+    private String frontendChannelId;
 
     private final WebClient discordWebClient;
 

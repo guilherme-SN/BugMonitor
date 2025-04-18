@@ -11,6 +11,9 @@ public class WebClientConfig {
     @Value("${notion.token}")
     private String notionToken;
 
+    @Value("${discord.bot.token}")
+    private String botToken;
+
     @Bean
     public WebClient notionWebClient() {
         return WebClient.builder()
@@ -28,7 +31,8 @@ public class WebClientConfig {
     @Bean
     public WebClient discordWebClient() {
         return WebClient.builder()
-                .baseUrl("https://discord.com/api")
+                .baseUrl("https://discord.com/api/v10")
+                .defaultHeader("Authorization", "Bot " + botToken)
                 .build();
     }
 }
