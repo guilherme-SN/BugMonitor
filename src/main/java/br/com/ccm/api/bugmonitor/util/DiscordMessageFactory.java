@@ -70,4 +70,29 @@ public class DiscordMessageFactory {
                 )
         );
     }
+
+    public static SendMessageCommand createBugStatusChangedMessage(Bug bug, String oldStatus, String newStatus, String sourceName) {
+        return new SendMessageCommand(
+                List.of(
+                        new Embed(
+                                "\u270F\uFE0F [STATUS DO BUG ALTERADO] \u270F\uFE0F",
+                                16775936,
+                                List.of(
+                                        new Field("Nome", bug.getName(), false),
+                                        new Field(sourceName + " Alterado", oldStatus + " \u27A1\uFE0F " + newStatus, false),
+                                        new Field("Prioridade", bug.getPriority(), true)
+                                ),
+                                new Footer("Monitoramento Automático")
+                        )
+                ),
+                List.of(
+                        new MessageComponent(
+                                1,
+                                List.of(
+                                        new Component(2, 5, "Link do card", bug.getUrl())
+                                )
+                        )
+                )
+        );
+    }
 }

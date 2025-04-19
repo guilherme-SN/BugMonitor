@@ -19,5 +19,6 @@ public class BugEventListener {
 
     @EventListener
     public void handleBugStatusChangedEvent(BugStatusChangedEvent event) {
+        discordNotificationService.sendBugStatusChangedNotification(event.oldBug(), event.newBug(), event.source());
     }
 }

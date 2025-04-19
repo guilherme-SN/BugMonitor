@@ -1,6 +1,7 @@
 package br.com.ccm.api.bugmonitor.service;
 
 import br.com.ccm.api.bugmonitor.command.discord.inputs.SendMessageCommand;
+import br.com.ccm.api.bugmonitor.enums.EBugStatusSource;
 import br.com.ccm.api.bugmonitor.model.Bug;
 import br.com.ccm.api.bugmonitor.util.DiscordMessageFactory;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,43 @@ public class DiscordNotificationService {
     public void sendBugCompletedNotification(Bug bug) {
         SendMessageCommand discordRequest = DiscordMessageFactory.createBugCompletedMessage(bug);
         sendNotification(discordRequest, this.generalChannelId);
+    }
+
+    public void sendBugStatusChangedNotification(Bug oldBug, Bug newBug, EBugStatusSource source) {
+        String oldStatus = "";
+        String newStatus = "";
+        String discordChannelId = "";
+
+        switch (source) {
+            case TASK -> {
+                oldStatus = oldBug.getTaskStatus();
+                newStatus = newBug.getTaskStatus();
+                discordChannelId = this.generalChannelId;
+            }
+            case PRODUCT -> {
+                oldStatus = oldBug.getProductStatus();
+                newStatus = newBug.getProductStatus();
+                discordChannelId = this.productChannelId;
+            }
+            case QA -> {
+                oldStatus = oldBug.getQaStatus();
+                newStatus = newBug.getQaStatus();
+                discordChannelId = this.qaChannelId;
+            }
+            case BACKEND -> {
+                oldStatus = oldBug.getBackendStatus();
+                newStatus = newBug.getBackendStatus();
+                discordChannelId = this.backendChannelId;
+            }
+            case FRONTEND -> {
+                oldStatus = oldBug.getFrontendStatus();
+                newStatus = newBug.getFrontendStatus();
+                discordChannelId = this.frontendChannelId;
+            }
+        }
+
+        SendMessageCommand discordRequest = DiscordMessageFactory.createBugStatusChangedMessage(newBug, oldStatus, newStatus, source.sourceName);
+        sendNotification(discordRequest, discordChannelId);
     }
 
     public void sendNotification(SendMessageCommand discordRequest, String channelId) {
